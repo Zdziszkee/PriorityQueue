@@ -12,7 +12,7 @@ constexpr size_t ROOT_INDEX = 0;
 template <class T>
 class PriorityQueue
 {
-public:
+private:
     class PriorityQueueElement
     {
     public:
@@ -72,7 +72,7 @@ public:
         delete[] priority_queue_array;
         priority_queue_array = new_array;
     }
-
+public:
     explicit PriorityQueue(
         const size_t initial_capacity
     )

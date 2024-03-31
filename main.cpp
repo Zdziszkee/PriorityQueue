@@ -21,7 +21,7 @@ int main()
         }
         else if (operation == "REMOVE")
         {
-            if (priority_queue.current_size == 0)
+            if (priority_queue.size() == 0)
             {
                 std::cout << "EMPTY" << std::endl;
             }
@@ -32,7 +32,7 @@ int main()
         }
         else if (operation == "PEEK")
         {
-            if (priority_queue.current_size == 0)
+            if (priority_queue.size() == 0)
             {
                 std::cout << "EMPTY" << std::endl;
             }
