@@ -122,7 +122,7 @@ public:
         return priority_queue_array[ROOT_INDEX];
     }
 
-    const PriorityQueueElement pop()
+     PriorityQueueElement pop()
     {
         if (current_size <= 0)
         {
