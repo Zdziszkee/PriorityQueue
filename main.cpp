@@ -1,41 +1,47 @@
 #include <iostream>
-
+#include <string>
+#include <sstream>
 #include "PriorityQueue.hpp"
 
-int main() {
-    PriorityQueue<int> integers(10);
-    integers.insert(10,1);
-    integers.insert(10,2);
-    integers.insert(10,3);
-    integers.insert(10,4);
-    integers.insert(10,5);
-    integers.insert(10,6);
-    integers.insert(10,7);
-    integers.insert(10,8);
-    integers.insert(10,9);
-    integers.insert(10,10);
+int main()
+{
+    PriorityQueue<std::string> priority_queue(64);
+    std::string line;
+    while (std::getline(std::cin, line))
+    {
+        std::istringstream iss(line);
+        std::string operation, id;
 
-    integers.print();
+        iss >> operation;
+        if (operation == "ADD")
+        {
+            int priority;
+            iss >> id >> priority;
+            priority_queue.insert(id, priority);
+        }
+        else if (operation == "REMOVE")
+        {
+            if (priority_queue.current_size == 0)
+            {
+                std::cout << "EMPTY" << std::endl;
+            }
+            else
+            {
+                std::cout << priority_queue.pop().element << std::endl; // Access the ID
+            }
+        }
+        else if (operation == "PEEK")
+        {
+            if (priority_queue.current_size == 0)
+            {
+                std::cout << "EMPTY" << std::endl;
+            }
+            else
+            {
+                std::cout << priority_queue.peek().element << std::endl; // Access the ID
+            }
+        }
+    }
 
-    integers.pop();
-    integers.print();
-
-    integers.pop();
-    integers.print();
-
-    integers.pop();
-    integers.print();
-
-    integers.pop();
-    integers.print();
-
-    integers.pop();
-    integers.print();
-
-    integers.pop();
-    integers.print();
-
-    integers.pop();
-    integers.print();
     return 0;
 }

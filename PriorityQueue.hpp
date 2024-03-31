@@ -33,87 +33,19 @@ public:
     size_t current_capacity{};
     PriorityQueueElement* priority_queue_array;
 
-
-    bool is_root(const size_t index)
-    {
-        return index == ROOT_INDEX;
-    }
-
-    bool is_parent_smaller(const size_t index, const PriorityQueueElement& priority_queue_element)
-    {
-        size_t parent_index = get_parent_index(index);
-        const PriorityQueueElement& parent = priority_queue_array[parent_index];
-        return parent.priority < priority_queue_element.priority;
-    }
-
-
-    void swap(const size_t first, const size_t second)
-    {
-        PriorityQueueElement first_element = priority_queue_array[first];
-        priority_queue_array[first] = priority_queue_array[second];
-        priority_queue_array[second] = first_element;
-    }
-
-    size_t get_parent_index(const size_t index)
+    static size_t get_parent_index(const size_t index)
     {
         return (index - 1) / 2;
     }
 
-    size_t get_left_child_index(const size_t index)
+    static size_t get_left_child_index(const size_t index)
     {
         return index * 2 + 1;
     }
 
-    size_t get_right_child_index(const size_t index)
+    static size_t get_right_child_index(const size_t index)
     {
         return index * 2 + 2;
-    }
-
-
-    void heapifyUp(const PriorityQueueElement& priority_queue_element)
-    {
-        size_t insertion_index = current_size;
-        while (!is_root(insertion_index) && is_parent_smaller(insertion_index, priority_queue_element))
-        {
-            size_t parent_index = get_parent_index(insertion_index);
-            swap(insertion_index, parent_index);
-            insertion_index = get_parent_index(insertion_index);
-        }
-        priority_queue_array[insertion_index] = priority_queue_element;
-    }
-
-    void heapifyDown(size_t parent)
-    {
-        size_t left_child, right_child, largest;
-
-        while (parent < current_capacity)
-        {
-            largest = parent;
-
-            left_child = get_left_child_index(parent);
-            right_child = get_right_child_index(parent);
-
-            if (left_child < current_capacity && priority_queue_array[left_child].priority > priority_queue_array[
-                largest].priority)
-            {
-                largest = left_child;
-            }
-
-            if (right_child < current_capacity && priority_queue_array[right_child].priority > priority_queue_array[
-                largest].priority)
-            {
-                largest = right_child;
-            }
-
-            if (largest == parent)
-            {
-                return;
-            }
-
-            swap(parent, largest);
-
-            parent = largest;
-        }
     }
 
     void grow()
@@ -159,9 +91,26 @@ public:
         {
             grow();
         }
-        PriorityQueueElement priority_queue_element(priority, element);
-        heapifyUp(priority_queue_element);
+        size_t insertion_index = current_size;
         ++current_size;
+
+        while (insertion_index > 0)
+        {
+            size_t parent_index = get_parent_index(insertion_index);
+
+            // Compare with parent and swap if necessary
+            if (priority > priority_queue_array[parent_index].priority)
+            {
+                std::swap(priority_queue_array[insertion_index], priority_queue_array[parent_index]);
+            }
+            else
+            {
+                break; // Heap property restored
+            }
+
+            insertion_index = parent_index;
+        }
+        priority_queue_array[insertion_index] = PriorityQueueElement(priority, element);
     }
 
     const PriorityQueueElement& peek()
@@ -173,17 +122,56 @@ public:
         return priority_queue_array[ROOT_INDEX];
     }
 
-    const PriorityQueueElement& pop()
+    const PriorityQueueElement pop()
     {
         if (current_size <= 0)
         {
             throw std::underflow_error("Heap is empty!");
         }
-        PriorityQueueElement& element = priority_queue_array[ROOT_INDEX];
+        PriorityQueueElement element = priority_queue_array[ROOT_INDEX];
         priority_queue_array[ROOT_INDEX] = priority_queue_array[current_size - 1];
+
+        size_t parent_index = ROOT_INDEX;
+        size_t left_child_index, right_child_index, largest_element_index;
+
+        while (parent_index < current_capacity)
+        {
+            largest_element_index = parent_index;
+
+            left_child_index = get_left_child_index(parent_index);
+            right_child_index = get_right_child_index(parent_index);
+
+            if (left_child_index < current_capacity && priority_queue_array[left_child_index].priority >
+                priority_queue_array[
+                    largest_element_index].priority)
+            {
+                largest_element_index = left_child_index;
+            }
+
+            if (right_child_index < current_capacity && priority_queue_array[right_child_index].priority >
+                priority_queue_array[
+                    largest_element_index].priority)
+            {
+                largest_element_index = right_child_index;
+            }
+
+            if (largest_element_index == parent_index)
+            {
+                break;
+            }
+
+            std::swap(priority_queue_array[parent_index], priority_queue_array[largest_element_index]);
+
+            parent_index = largest_element_index;
+        }
+
         current_size--;
-        heapifyDown(ROOT_INDEX);
         return element;
+    }
+
+    size_t size()
+    {
+        return current_size;
     }
 
     void print()
